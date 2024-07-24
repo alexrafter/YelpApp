@@ -38,7 +38,7 @@ const helmet = require('helmet');
     useUnifiedTopology: true
 });*/
 //npm install connect-mongo@latest
-const dbUrl = 'mongodb://localhost:27017/yelp-camp'; //process.env.DB_URL;
+const dbUrl =  process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 mongoose.connect(dbUrl ,{
     useNewUrlParser: true, 
     useUnifiedTopology: true
@@ -104,6 +104,7 @@ app.use(
     })
 );
 
+const secret = process.env.SECRET ||  'thisshouldbeabettersecret'
 app.engine('ejs', ejsMate);
 app.set('view engine','ejs');
 app.set('views', path.join(__dirname,'views'));
@@ -113,7 +114,7 @@ const store = MongoStore.create({
     mongoUrl: dbUrl,
     touchAfter: 24 * 60 * 60,
     crypto: {
-        secret: 'thisshouldbeabettersecret'
+        secret
     }
 });
 
@@ -123,7 +124,7 @@ store.on("error", function(e){
 
 const sessionConfig = {
     name: 'session', // name of cookie
-    secret: 'thisshouldbeabettersecret',
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: { //cookie options
